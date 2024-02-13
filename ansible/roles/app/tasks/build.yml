@@ -1,0 +1,40 @@
+- name: app_build | make sure previous build directory is removed
+  file:
+    path: "{{ build_directory }}/{{ apps[app_name] }}"
+    state: absent
+
+- name: app_build | synchronize files
+  synchronize:
+    src: "{{ playbook_dir }}/../apps/{{ app_name }}"
+    dest: "{{ build_directory }}/"
+    rsync_opts:
+      - "--exclude=__pycache__"
+      - "--exclude=build"
+      
+- name: app_build | set permissions for build directory
+  file:
+    path: "{{ build_directory }}/{{ app_name }}"
+    state: directory
+    recurse: yes
+    owner: "{{ build_user }}"
+    group: "{{ build_group }}"
+
+- name: app_build | install requirements
+  pip:
+    requirements: "{{ build_directory }}/{{ app_name }}/requirements.txt"
+    virtualenv: "{{ build_directory }}/{{ app_name }}-venv"
+  become: true
+  become_user: "{{ build_user }}"
+
+- name: "app_build | import environments vars"
+  set_fact:
+    app_env_variables: "{{ apps[app_name] }}"
+
+- name: app_build | build app
+  shell: "source {{ build_directory }}/{{ app_name }}-venv/bin/activate && python build.py"
+  args:
+    chdir: "{{ build_directory }}/{{ app_name }}"
+    executable: /bin/bash
+  environment: "{{ app_env_variables }}"
+  become: true
+  become_user: "{{ build_user }}"

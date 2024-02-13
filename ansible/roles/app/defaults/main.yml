@@ -1,0 +1,4 @@
+build_group: app_builder
+build_user: app_builder
+build_directory: "/home/{{ build_user }}"
+release_directory: /usr/share/nginx/html

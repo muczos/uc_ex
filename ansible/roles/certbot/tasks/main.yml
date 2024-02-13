@@ -1,0 +1,2 @@
+- import_tasks: generate_crt.yml
+  tags: certbot_generate_crt

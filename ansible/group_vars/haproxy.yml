@@ -1,0 +1,2 @@
+cert_destination: /etc/ssl/private
+certbot_port: 8888

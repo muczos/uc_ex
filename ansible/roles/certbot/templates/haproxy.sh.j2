@@ -1,0 +1,2 @@
+cat /etc/letsencrypt/live/{{ app_name}}.{{ app_url_suffix }}/fullchain.pem /etc/letsencrypt/live/{{ app_name}}.{{ app_url_suffix }}/privkey.pem > {{ cert_destination }}/{{ app_name}}.{{ app_url_suffix }}.pem
+systemctl restart haproxy

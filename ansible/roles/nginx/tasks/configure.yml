@@ -1,0 +1,48 @@
+#when: "'prod' in inventory_file"
+
+- name: nginx_configure | setup main config
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart nginx
+
+- name: nginx_configure | setup default server
+  template:
+    src: default.j2
+    dest: /etc/nginx/sites-available/default
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart nginx
+
+- name: nginx_configure | make sure service is started
+  service:
+    name: nginx
+    enabled: yes
+    state: started
+
+## temporary
+- name: dirs
+  file:
+    path: "/usr/share/nginx/html/{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  loop:
+  - '1'
+  - '2'
+
+- name: file
+  template:
+    src: testik
+    dest: "/usr/share/nginx/html/{{ item }}/index.html"
+    owner: root
+    group: root
+    mode: 0644
+  loop:
+  - '1'
+  - '2' 

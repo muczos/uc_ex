@@ -1,0 +1,10 @@
+nginx_repo_key_location: https://nginx.org/keys/nginx_signing.key
+nginx_repo_key_fingerprint: 573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
+nginx_repo_keyring_dest: /etc/apt/trusted.gpg.d/nginx.gpg
+
+nginx_version: 1.22.1-9
+nginx_user: www-data
+nginx_group: www-data
+nginx_log_group: adm
+nginx_worker_connections: 4096
+nginx_limitnofile: 32768

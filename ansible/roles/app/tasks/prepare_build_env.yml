@@ -1,0 +1,19 @@
+- name: app_prepare_build_env | install python packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - python3-virtualenv
+    - python3-pip
+
+- name: app_prepare_build_env | create build user group
+  group:
+    name: "{{ build_group }}"
+    state: present
+
+- name: app_prepare_build_env | create build user
+  user: 
+    name: "{{ build_user }}" 
+    comment: 'Static app build user' 
+    group: "{{ build_group }}" 
+    shell: /bin/bash

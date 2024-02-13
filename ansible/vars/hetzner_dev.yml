@@ -1,0 +1,6 @@
+apps:
+  simple-app:
+    MAIN_COLOR: green
+    NGINX1_COLOR: red
+    NGINX2_COLOR: blue
+    INCLUDE_SYS_INFO: false

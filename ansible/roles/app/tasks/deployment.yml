@@ -1,0 +1,61 @@
+- name: Get timestamp from the system
+  shell: "date +%Y-%m-%d_%H-%M-%S"
+  register: tstamp
+  delegate_to: localhost
+
+- name: app_deployment | create release directory
+  file:
+    path: "{{ release_directory }}/{{ app_name }}/releases/{{ tstamp.stdout }}"
+    state: directory
+    owner: www-data
+    group: www-data
+
+- name: app_deployment | sync newly builded files to release directory
+  copy:
+    src: "{{ build_directory }}/{{ app_name }}/build/"
+    dest: "{{ release_directory }}/{{ app_name }}/releases/{{ tstamp.stdout }}"
+    remote_src: true
+
+- name: app_deployment | set ownership for deployment
+  file:
+    path: "{{ release_directory }}/{{ app_name }}/releases/{{ tstamp.stdout }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    recurse: true
+
+- name: app_deployment | upload vhost configuration
+  template:
+    src: vhost.conf.j2
+    dest: "/etc/nginx/sites-available/{{ app_name }}.conf"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: app_deployment | enable vhost
+  file:
+    src: "/etc/nginx/sites-available/{{ app_name }}.conf"
+    dest: "/etc/nginx/sites-enabled/{{ app_name }}.conf"
+    state: link
+    owner: root
+    group: root
+
+- name: app_deployment | set symlink to current build
+  file:
+    src: "{{ release_directory }}/{{ app_name }}/releases/{{ tstamp.stdout }}"
+    dest: "{{ release_directory }}/{{ app_name }}/current"
+    state: link
+    owner: www-data
+    group: www-data
+    force: true
+
+- name: app_deployment | reload nginx
+  systemd:
+    name: nginx
+    state: reloaded
+
+- name: app_deployment | remove old builds"
+  shell: for i in `ls -1 | head -n -3`; do rm -rf $i; done
+  args:
+    chdir: "{{ release_directory }}/{{ app_name }}/releases"
+    executable: /bin/bash

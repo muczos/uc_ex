@@ -1,0 +1,34 @@
+- name: haproxy_install | import gpg key
+  apt_key:
+    url: "{{ haproxy_repo_key_location }}"
+    state: present 
+    keyring: "{{ haproxy_repo_keyring_dest }}"
+    id: "{{ haproxy_repo_key_fingerprint }}"
+
+- name: haproxy_install | set repository
+  template:
+    src: haproxy.list.j2
+    dest: /etc/apt/sources.list.d/haproxy.list
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: haproxy_install | set policy for haproxy package
+  template:
+    src: 99haproxy.j2
+    dest: /etc/apt/preferences.d/99haproxy
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: haproxy_install | install haproxy
+  apt:
+    name: "haproxy={{ haproxy_version }}"
+    update_cache: yes
+    allow_downgrade: yes
+    allow_change_held_packages: true # assume that host is dedicated to manage only haproxy instance
+
+- name: haproxy_install | protect haproxy before unwanted upgrade
+  dpkg_selections:
+    name: haproxy
+    selection: hold

@@ -1,0 +1,5 @@
+haproxy_repo_key_location: https://haproxy.debian.net/bernat.debian.org.gpg
+haproxy_repo_key_fingerprint: AEF2348766F371C689A7360095A42FE8353525F9
+haproxy_repo_keyring_dest: /etc/apt/trusted.gpg.d/haproxy.gpg
+
+haproxy_version: 2.8.5-1~bpo12+1

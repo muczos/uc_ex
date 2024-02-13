@@ -1,0 +1,55 @@
+user {{ nginx_user }};
+worker_rlimit_nofile {{ nginx_limitnofile }};
+worker_processes auto;
+pid /run/nginx.pid;
+include /etc/nginx/modules-enabled/*.conf;
+
+events {
+  worker_connections {{ nginx_worker_connections }};
+}
+
+http {
+  sendfile on;
+  tcp_nopush on;
+  tcp_nodelay on;
+  keepalive_timeout 65;
+  types_hash_max_size 2048;
+  include /etc/nginx/mime.types;
+  default_type application/octet-stream;
+  access_log /var/log/nginx/access.log;
+  error_log /var/log/nginx/error.log;
+  server_names_hash_bucket_size 64;
+
+  # gzip options
+  gzip on;
+  gzip_disable "msie6";
+  gzip_comp_level 1;
+  gzip_min_length 1000;
+  gzip_proxied    expired no-cache no-store private auth;
+  gzip_types    text/plain text/javascript application/javascript application/x-javascript text/xml text/css;
+
+  # ssl defaults
+  ssl_protocols TLSv1.2 TLSv1.3;
+  ssl_prefer_server_ciphers on;
+  ssl_dhparam /etc/ssl/certs/dhparams.pem;
+  ssl_ciphers EECDH+AESGCM:EDH+AESGCM;
+  ssl_ecdh_curve secp384r1;
+  ssl_session_timeout 10m;
+  ssl_session_cache shared:SSL:10m;
+  ssl_session_tickets off;
+  ssl_stapling on;
+  ssl_stapling_verify on;
+  resolver 1.1.1.1 8.8.8.8 valid=300s ipv6=off;
+  resolver_timeout 2s;
+
+  # security_headers on;
+  server_tokens off;
+  add_header Strict-Transport-Security "max-age=15768000; includeSubDomains; preload";
+  add_header Referrer-Policy "no-referrer, strict-origin-when-cross-origin";
+  add_header X-Content-Type-Options nosniff;
+  add_header X-Xss-Protection "1; mode=block;";
+
+  include /etc/nginx/conf.d/*.conf;
+	include /etc/nginx/sites-enabled/*;
+}
+

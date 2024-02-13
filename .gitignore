@@ -1,0 +1,9 @@
+ansible/inventory/*
+venv
+**/.terraform/*
+**/.tfstate
+**/*.tfstate.*
+**/.terraform.lock.hcl
+*.swp
+apps/simple-app/__pycache__
+apps/simple-app/build

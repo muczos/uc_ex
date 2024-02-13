@@ -1,0 +1,9 @@
+- import_tasks: prepare_build_env.yml
+  tags: app_prepare_build_env
+
+- import_tasks: build.yml
+  tags: app_build
+
+- import_tasks: deployment.yml
+  tags: app_deployment
+

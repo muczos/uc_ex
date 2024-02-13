@@ -1,0 +1,54 @@
+- name: nginx_install | import gpg key
+  apt_key:
+    url: "{{ nginx_repo_key_location }}"
+    state: present 
+    keyring: "{{ nginx_repo_keyring_dest }}"
+    id: "{{ nginx_repo_key_fingerprint }}"
+
+- name: nginx_install | set repository
+  template:
+    src: nginx.list.j2
+    dest: /etc/apt/sources.list.d/nginx.list
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: nginx_install | set policy for nginx package
+  template:
+    src: 99nginx.j2
+    dest: /etc/apt/preferences.d/99nginx
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: nginx_install | install nginx
+  apt:
+    name: "nginx={{ nginx_version }}"
+    update_cache: yes
+    allow_downgrade: yes
+    allow_change_held_packages: true # assume that host is dedicated to manage only nginx instance
+
+- name: nginx_install | create directory for service update definition
+  file:
+    path: /etc/systemd/system/nginx.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0750'
+    
+- name: nginx_install | set additional properties for nginx service
+  template:
+    src: nginx.service.conf.j2
+    dest: /etc/systemd/system/nginx.service.d/override.conf
+    owner: root
+    group: root
+    mode: '0644' 
+  
+- name: nginx_install | daemon reload
+  systemd:
+    daemon_reload: true
+
+- name: nginx_install | protect nginx before unwanted upgrade
+  dpkg_selections:
+    name: nginx
+    selection: hold

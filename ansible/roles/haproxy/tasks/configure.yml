@@ -1,0 +1,8 @@
+- name: haproxy_configure | upload config 
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    owner: root
+    group: root
+    mode: '0640'
+  notify: restart haproxy

@@ -1,0 +1,24 @@
+<!doctype html>
+<title>Hello there</title>
+<body style="background: {{ color }};"></body>
+<div style="color: #e4e4e4;
+    text-align:  center;
+    height: 90px;
+		h2: {display: inline }
+    vertical-align:  middle;">
+
+{% if name %}
+  <h1>Hello from {{ name }}!</h1>
+{% else %}
+  <h1>Hello, World!</h1>
+{% endif %}
+
+<h2><a href="/1/">route to nginx1</a>&nbsp&nbsp&nbsp<a href="/">Home</a>&nbsp&nbsp&nbsp<a href="/2/">route to nginx2</a></h2>
+
+{% if system_info %}
+  <textarea rows="10" cols="50">
+{{ system_info }}
+  </textarea>
+{% endif %}
+
+</div>
